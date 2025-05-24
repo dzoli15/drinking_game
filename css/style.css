@@ -1,0 +1,779 @@
+/* ===== ALAP STÍLUSOK és GITHUB SÖTÉT TÉMA VÁLTOZÓK ===== */
+:root {
+    --bg-color: #0d1117;
+    --panel-bg-color: #161b22;
+    --border-color: #30363d;
+    --text-color: #c9d1d9;
+    --text-secondary-color: #8b949e;
+    --input-bg-color: #010409;
+    --input-border-color: #21262d;
+
+    --primary-color: #2ea043; /* Zöld */
+    --primary-hover-color: #238636;
+    --secondary-color: #30363d;
+    --secondary-hover-color: #484f58;
+    --accent-blue: #58a6ff;
+    --accent-blue-hover: #4A91E3;
+    --danger-color: #f85149;
+    --danger-hover-color: #da3633;
+    --success-color: #1f6feb;
+    --success-hover-color: #1a5ab8;
+    --info-color: var(--accent-blue);
+    --info-hover-color: var(--accent-blue-hover);
+
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+    --box-shadow-light: 0 2px 10px rgba(0,0,0,0.1);
+    --box-shadow-medium: 0 5px 25px rgba(0,0,0,0.3);
+    --box-shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== BODY és ÁLTALÁNOS KONTÉNEREK ===== */
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding-top: 70px; /* Hely a fix navigációs sávnak */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Navigációs Sáv */
+.navigation-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--panel-bg-color);
+    padding: 10px 20px;
+    box-shadow: var(--box-shadow-light);
+    z-index: 1005; /* Magasabb, mint a fejléc, de a modal overlay alatt */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+}
+.navigation-bar label {
+    font-weight: 500;
+    color: var(--text-secondary-color);
+}
+.navigation-bar select {
+    padding: 8px 12px;
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--border-radius);
+    font-size: 15px;
+}
+
+.page-section {
+    padding: 20px; /* Kisebb padding, mivel a body-nak van padding-top */
+    width: 100%;
+    box-sizing: border-box;
+    display: none; /* Alapból minden szekció rejtett */
+    flex-direction: column;
+    align-items: center;
+    animation: fadeInSection 0.5s ease-out;
+}
+.page-section.active-section {
+    display: flex; /* Csak az aktív látszik */
+}
+
+@keyframes fadeInSection {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-section > .container,
+.page-section > main.container {
+    width: 100%;
+    max-width: 480px;
+}
+
+/* ===== FEJLÉC (Lobby, Room, Game) ===== */
+.app-header {
+    background-color: var(--panel-bg-color);
+    padding: 12px 20px; /* Kisebb padding, ha a nav bar felette van */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 100; /* Marad, hogy a modal overlay alatt legyen */
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px; /* Tér a fejléc és a tartalom között */
+}
+/* Ha a header a .page-section-ön BELÜL van: */
+.page-section > .app-header {
+    max-width: 1100px; /* Hogy a szélesebb szekciók fejlécével passzoljon */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.user-info { display: flex; align-items: center; gap: 12px; }
+.avatar-display {
+    width: 36px; height: 36px; border-radius: 50%;
+    background-color: var(--accent-blue); color: white;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 18px; font-weight: bold; overflow: hidden;
+    border: 2px solid var(--border-color);
+}
+.avatar-display img { width: 100%; height: 100%; object-fit: cover; }
+.username-text { font-size: 16px; font-weight: 600; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ===== LOGIN/REGISZTRÁCIÓ PANEL ===== */
+#login-register-section { justify-content: center; /* Középre igazítja a panelt */}
+#login-register-section .panel-container {
+    background-color: var(--panel-bg-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-strong);
+    overflow: hidden;
+    width: 100%; /* A .container-en belül veszi fel a max-width-ot */
+    animation: fadeIn 0.5s ease-out; /* Marad, de a .page-section animációja is érvényesül */
+}
+#login-register-section .panel-tabs { display: flex; background-color: rgba(0,0,0,0.1); }
+#login-register-section .tab-link {
+    flex-grow: 1; padding: 15px 20px; background-color: transparent;
+    border: none; border-bottom: 3px solid transparent; color: var(--text-secondary-color);
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    transition: color var(--transition-speed), border-color var(--transition-speed); text-align: center;
+}
+#login-register-section .tab-link:hover { color: var(--text-color); }
+#login-register-section .tab-link.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+#login-register-section .panel { padding: 25px 30px; display: none; animation: slideUp 0.4s ease-out; }
+#login-register-section .panel.active { display: block; padding-top: 30px; }
+
+/* Avatár Stílusok (Login/Regisztráció) */
+#login-register-section .avatar-options { margin-top: 15px; }
+#login-register-section .default-avatar-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+#login-register-section .default-avatar-preview {
+    width: 80px; height: 80px; background-color: var(--accent-blue);
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    color: white; font-size: 36px; font-weight: bold; cursor: pointer;
+    border: 3px solid transparent; transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+#login-register-section .default-avatar-preview.selected-avatar { border-color: var(--primary-color); }
+#login-register-section .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-items: center; }
+#login-register-section .avatar-example {
+    width: calc(100% - 4px); max-width: 80px; aspect-ratio: 1 / 1;
+    border-radius: var(--border-radius); cursor: pointer; border: 3px solid transparent;
+    transition: border-color var(--transition-speed), transform var(--transition-speed); object-fit: cover;
+}
+#login-register-section .avatar-example:hover { transform: scale(1.05); }
+#login-register-section .avatar-example.selected-avatar { border-color: var(--primary-color); transform: scale(1.05); }
+
+/* ===== ÁLTALÁNOS FORM ELEMEK ===== */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; color: var(--text-secondary-color); margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+.form-input {
+    width: 100%; padding: 12px 15px; background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color); border-radius: var(--border-radius);
+    color: var(--text-color); font-size: 16px; box-sizing: border-box;
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+.form-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3); outline: none; }
+
+/* Hibaüzenetek */
+.error-message {
+    color: var(--danger-color);
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+}
+
+/* ===== ÁLTALÁNOS GOMBOK ===== */
+.btn {
+    padding: 10px 18px; border: none; border-radius: var(--border-radius);
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s ease-out;
+    text-align: center; display: inline-block; text-decoration: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover { background-color: var(--primary-hover-color); }
+.btn-secondary { background-color: var(--secondary-color); color: var(--text-color); }
+.btn-secondary:hover { background-color: var(--secondary-hover-color); }
+.btn-danger { background-color: var(--danger-color); color: white; }
+.btn-danger:hover { background-color: var(--danger-hover-color); }
+.btn-success { background-color: var(--success-color); color: white; }
+.btn-success:hover { background-color: var(--success-hover-color); }
+.btn-info { background-color: var(--info-color); color: white; }
+.btn-info:hover { background-color: var(--info-hover-color); }
+.btn-full-width { width: 100%; padding: 12px; font-size: 16px; margin-top: 10px; }
+.btn-icon {
+    background: none; border: none; color: var(--text-secondary-color);
+    font-size: 22px; cursor: pointer; padding: 5px; line-height: 1;
+    transition: color var(--transition-speed);
+}
+.btn-icon:hover { color: var(--text-color); }
+.btn-small { padding: 6px 12px; font-size: 0.9em; }
+
+/* ===== LOBBY ===== */
+#lobby-section .container { max-width: 600px; }
+#lobby-section .lobby-main { padding-top: 0; /* Header már adja a teret */ }
+#lobby-section .lobby-controls { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 380px; margin: 20px auto; }
+
+/* Aktív szobák */
+#active-rooms-container {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 600px;
+}
+
+#active-rooms-container h3 {
+    color: var(--text-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.room-item {
+    background-color: var(--panel-bg-color);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    transition: border-color var(--transition-speed);
+}
+
+.room-item:hover {
+    border-color: var(--accent-blue);
+}
+
+/* ===== JÁTÉKSZOBA ===== */
+#room-section .container { max-width: 980px; }
+#room-section .room-main-container { padding-top: 0; }
+#room-section .room-info-bar {
+    background-color: var(--panel-bg-color); padding: 10px 15px; border-radius: var(--border-radius);
+    margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid var(--border-color);
+}
+#room-section .room-code-display { font-size: 1.1em; color: var(--text-secondary-color); }
+#room-section .room-code-display strong { color: var(--text-color); font-weight: 600; user-select: all; }
+#room-section .room-layout { display: flex; gap: 20px; flex-wrap: wrap; }
+#room-section .game-modes-panel,
+#room-section .players-and-controls-panel {
+    flex: 1; min-width: 280px; background-color: var(--panel-bg-color);
+    padding: 20px; border-radius: var(--border-radius); border: 1px solid var(--border-color);
+}
+#room-section .players-and-controls-panel { flex: 2; display: flex; flex-direction: column;}
+#room-section .game-modes-panel h3,
+#room-section .players-and-controls-panel h3 {
+    margin-top: 0; margin-bottom: 15px; color: var(--text-color);
+    font-size: 1.3em; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;
+}
+#room-section .game-mode-buttons { display: flex; flex-direction: column; gap: 10px; }
+#room-section .game-mode-btn {
+    padding: 12px 15px; background-color: var(--input-bg-color); color: var(--text-secondary-color);
+    border: 1px solid var(--border-color); border-radius: var(--border-radius); text-align: left;
+    font-size: 1em; cursor: pointer; transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+#room-section .game-mode-btn:hover:not(:disabled) { background-color: var(--secondary-color); color: var(--text-color); border-color: var(--accent-blue); }
+#room-section .game-mode-btn.active { background-color: var(--primary-color); color: white; border-color: var(--primary-hover-color); font-weight: bold; }
+#room-section .game-mode-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+#room-section .admin-only-text { font-size: 0.9em; color: var(--text-secondary-color); margin-top:10px;}
+#room-section .player-list-room { list-style: none; padding: 0; margin: 0 0 20px 0; flex-grow: 1; max-height: 400px; overflow-y: auto; }
+#room-section .player-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background-color: var(--input-bg-color); border-radius: calc(var(--border-radius) - 2px); margin-bottom: 8px; }
+#room-section .player-item:last-child { margin-bottom: 0; }
+#room-section .player-info { display: flex; align-items: center; gap: 10px; }
+/* Javítás: Játékos avatár a szobában */
+#room-section .player-avatar {
+    width: 32px; height: 32px; border-radius: 50%; /* Kör alakú */
+    background-color: var(--accent-blue); color: white;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 16px; font-weight: bold; overflow: hidden;
+    border: 1px solid var(--border-color); /* Vékony keret */
+}
+#room-section .player-avatar img { width: 100%; height: 100%; object-fit: cover;}
+#room-section .player-name { font-size: 1em; color: var(--text-color); }
+#room-section .player-name.is-admin { font-weight: bold; color: var(--primary-color); }
+#room-section .kick-player-btn { background: none; border: none; color: var(--danger-color); font-size: 1.2em; font-weight: bold; cursor: pointer; padding: 2px 5px; line-height: 1; opacity: 0.7; transition: opacity var(--transition-speed); }
+#room-section .kick-player-btn:hover { opacity: 1; }
+#room-section .admin-controls { margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border-color); }
+#room-section .admin-only-item { display: none; /* JS kezeli */ }
+
+/* ===== JÁTÉK NÉZET ===== */
+#game-section .container { max-width: 700px; }
+#game-section .game-main-container { padding-top: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; flex-grow: 1; }
+#game-section .game-header .game-stats-header {
+    display: flex; align-items: center; gap: 8px; color: var(--text-secondary-color);
+    font-size: 0.9em; white-space: nowrap; flex-grow: 1; justify-content: center;
+}
+#game-section .game-stats-header .stats-divider { color: var(--border-color); }
+#game-section .game-stats-header .drink-icon { 
+    font-size: 1.5em; padding: 0 5px; color: var(--accent-blue); 
+    background: none; border: none; cursor: pointer;
+    transition: color var(--transition-speed);
+}
+#game-section .game-stats-header .drink-icon:hover { color: var(--accent-blue-hover); }
+#game-section .card-area {
+    background-color: var(--panel-bg-color); border: 1px solid var(--border-color);
+    border-radius: var(--border-radius); padding: 30px 40px; min-width: 300px;
+    max-width: 600px; width: 90%; box-shadow: var(--box-shadow-medium); min-height: 200px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    margin-bottom: 25px;
+}
+#game-section .card-type { color: var(--accent-blue); font-size: 1.6em; margin-top: 0; margin-bottom: 15px; font-weight: 600; }
+#game-section .card-text { color: var(--text-color); font-size: 1.2em; line-height: 1.6; margin-bottom: 0; white-space: pre-line; }
+
+/* Kártya akciók */
+#card-actions {
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* ===== MODALOK ===== */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 1000;
+    opacity: 0; transition: opacity var(--transition-speed) ease-in-out;
+}
+.modal-overlay.active { opacity: 1; }
+.modal {
+    display: none; position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -55%);
+    background-color: var(--panel-bg-color); color: var(--text-color);
+    padding: 25px 30px; border-radius: var(--border-radius); border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-medium); z-index: 1001; width: 90%; max-width: 500px;
+    opacity: 0; transition: opacity var(--transition-speed) ease-in-out, transform var(--transition-speed) ease-in-out;
+    max-height: 90vh; overflow-y: auto;
+}
+.modal.active { opacity: 1; transform: translate(-50%, -50%); }
+.modal h2 { color: var(--accent-blue); margin-top: 0; margin-bottom: 20px; font-size: 22px; text-align: center; }
+.modal .form-group { margin-bottom: 18px; }
+.modal .form-group label { color: var(--text-secondary-color); margin-bottom: 6px; font-size: 14px; }
+.modal .avatar-display.current-profile-avatar {
+    width: 80px; height: 80px; margin: 10px auto 15px; font-size: 30px;
+    border-width: 3px;
+}
+.close-modal-btn {
+    position: absolute; top: 12px; right: 15px; font-size: 28px;
+    color: var(--text-secondary-color); background: none; border: none; cursor: pointer;
+    line-height: 1; transition: color var(--transition-speed);
+}
+.close-modal-btn:hover { color: var(--text-color); }
+.modal .small-text { font-size: 12px; color: var(--text-secondary-color); margin-top: 15px; text-align: center; }
+
+/* Szabályzat modal */
+#rules-content h3 {
+    color: var(--accent-blue);
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#rules-content h3:first-child {
+    margin-top: 0;
+}
+
+#rules-content p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Statisztikák modal */
+#statsContent p { margin-bottom: 8px; font-size: 15px; }
+#statsContent strong { color: var(--text-secondary-color); }
+
+/* ===== INFOBOX ÜZENETEK ===== */
+#infobox-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1010;
+    max-width: 300px;
+}
+
+.infobox {
+    background-color: var(--panel-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--box-shadow-medium);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-out;
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.infobox-success {
+    border-left: 4px solid var(--primary-color);
+}
+
+.infobox-error {
+    border-left: 4px solid var(--danger-color);
+}
+
+.infobox-warning {
+    border-left: 4px solid #ff7b00;
+}
+
+.infobox-info {
+    border-left: 4px solid var(--accent-blue);
+}
+
+/* ===== ANIMÁCIÓK ===== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .navigation-bar {
+        padding: 8px 15px;
+    }
+    
+    .page-section {
+        padding: 15px;
+    }
+    
+    .app-header {
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .user-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap;
+    }
+    
+    #room-section .container {
+        max-width: 100%;
+    }
+    
+    #room-section .room-layout {
+        flex-direction: column;
+    }
+    
+    #room-section .game-modes-panel,
+    #room-section .players-and-controls-panel {
+        min-width: unset;
+        flex: unset;
+    }
+    
+    #room-section .room-info-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .modal {
+        width: 95%;
+        max-width: 95%;
+        margin: 10px;
+        max-height: 95vh;
+    }
+    
+    #game-section .card-area {
+        padding: 20px 25px;
+        min-width: unset;
+        width: 95%;
+    }
+    
+    #game-section .card-type {
+        font-size: 1.4em;
+    }
+    
+    #game-section .card-text {
+        font-size: 1.1em;
+    }
+    
+    #login-register-section .panel-container {
+        margin: 10px;
+    }
+    
+    #login-register-section .panel {
+        padding: 20px 25px;
+    }
+    
+    .game-stats-header {
+        font-size: 0.8em !important;
+        gap: 6px !important;
+    }
+    
+    .btn-full-width {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation-bar {
+        padding: 6px 10px;
+    }
+    
+    .page-section {
+        padding: 10px;
+    }
+    
+    .app-header {
+        padding: 8px 10px;
+    }
+    
+    .user-info {
+        gap: 8px;
+    }
+    
+    .avatar-display {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+    }
+    
+    .username-text {
+        font-size: 14px;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    .btn-small {
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+    
+    #game-section .card-area {
+        padding: 15px 20px;
+    }
+    
+    #game-section .card-type {
+        font-size: 1.2em;
+    }
+    
+    #game-section .card-text {
+        font-size: 1em;
+    }
+    
+    .modal {
+        padding: 20px 25px;
+    }
+    
+    .modal h2 {
+        font-size: 20px;
+    }
+    
+    #login-register-section .default-avatar-preview {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    #room-section .player-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .room-item {
+        padding: 12px;
+    }
+    
+    .game-stats-header .drink-icon {
+        font-size: 1.3em !important;
+    }
+}
+
+/* ===== EXTRA UTILITIES ===== */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+.mt-20 { margin-top: 20px; }
+
+.mb-10 { margin-bottom: 10px; }
+.mb-15 { margin-bottom: 15px; }
+.mb-20 { margin-bottom: 20px; }
+
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+/* Scrollbar stílusok */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--input-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Loading animáció */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--accent-blue);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Játékspecifikus stílusok */
+.card-actions {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.card-actions .btn {
+    margin: 5px;
+}
+
+.vote-results {
+    background-color: var(--input-bg-color);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-top: 15px;
+}
+
+.vote-results h4 {
+    margin-top: 0;
+    color: var(--accent-blue);
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--input-bg-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 8px;
+    transition: background-color var(--transition-speed);
+}
+
+.leaderboard-item:hover {
+    background-color: var(--secondary-color);
+}
+
+.leaderboard-position {
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 30px;
+}
+
+.leaderboard-position.first {
+    color: #ffd700; /* Arany */
+}
+
+.leaderboard-position.second {
+    color: #c0c0c0; /* Ezüst */
+}
+
+.leaderboard-position.third {
+    color: #cd7f32; /* Bronz */
+}
+
+/* Bomba továbbadás timer */
+.bomb-timer {
+    font-size: 3em;
+    color: var(--danger-color);
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(248, 81, 73, 0.5);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Trivia input stílusok */
+.trivia-input {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* Két igazság egy hazugság stílusok */
+.truth-lie-statements {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.statement-button {
+    text-align: left;
+    padding: 15px;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.statement-button:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--accent-blue);
+}
+
+/* Kire a legvalószínűbb player select */
+.player-select {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+}
+
+/* Taboo tiltott szavak */
+.taboo-forbidden {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.taboo-word {
+    background-color: var(--panel-bg-color);
+    color: var(--text-color);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid var(--accent-blue);
+}
+
+/* Kártya típus specifikus színek */
+.card-truth-or-dare { border-left: 4px solid var(--primary-color); }
+.card-most-likely { border-left: 4px solid var(--accent-blue); }
+.card-never-have-i { border-left: 4px solid var(--info-color); }
+.card-two-truths-lie { border-left: 4px solid #8b5cf6; }
+.card-trivia { border-left: 4px solid #ff7b00; }
+.card-hot-potato { border-left: 4px solid var(--danger-color); }
+.card-taboo { border-left: 4px solid #ec4899; }
